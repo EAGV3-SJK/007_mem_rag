@@ -1,5 +1,7 @@
 # EAGV3 Session 7 — Agent with FAISS Vector Memory
 
+[![Watch on YouTube](https://img.shields.io/badge/YouTube-Watch-red?logo=youtube)](https://www.youtube.com/watch?v=b0QvnfZVDiA)
+
 Session 7 agent built on a five-layer cognitive loop. The key addition over Session 6 is **vector memory**: every fact written to memory is embedded via the gateway's `/v1/embed` endpoint and stored in a FAISS index. Reads use cosine similarity first and fall back to keyword overlap when the vector path returns nothing. Two new MCP tools — `index_document` and `search_knowledge` — expose the same machinery to the model so it can ingest external documents on demand and query them across process restarts.
 
 ---
