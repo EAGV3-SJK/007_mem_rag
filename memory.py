@@ -332,25 +332,13 @@ def remember(
     return _persist_item(item)
 
 
+_CLASSIFIER_PROMPT_FILE = Path(__file__).parent / "memory_system_prompt.md"
+_CLASSIFIER_PROMPT_TEMPLATE = _CLASSIFIER_PROMPT_FILE.read_text(encoding="utf-8").strip()
+
+
 def _llm_classify(raw_text: str, schema: dict) -> dict:
     return LLM().chat(
-        prompt=(
-            "Classify the following content into a JSON memory record.\n\n"
-            f"CONTENT: {raw_text!r}\n\n"
-            "Return a JSON object with these fields:\n"
-            "- kind ∈ {fact, preference, tool_outcome, scratchpad}.\n"
-            "- descriptor: one short human-readable line. MUST include any\n"
-            "  specific dates (e.g. '15 May 2026'), numbers, names, places,\n"
-            "  or other concrete entities present in the content — these are\n"
-            "  what later retrieval will key off. 'Mom's birthday is on 15\n"
-            "  May 2026' is a good descriptor; 'birthday and reminder\n"
-            "  schedule' is a bad descriptor.\n"
-            "- keywords: 3-8 lowercase search keywords pulled from the content.\n"
-            "- value: a dict with structured fields (entities, dates,\n"
-            "  attributes). MUST NOT be empty when the content has any\n"
-            "  identifiable entity — if you cannot classify a specific\n"
-            "  attribute, include {\"raw\": <the original content>}."
-        ),
+        prompt=_CLASSIFIER_PROMPT_TEMPLATE.format(content=repr(raw_text)),
         auto_route="memory",
         response_format={
             "type": "json_schema",
