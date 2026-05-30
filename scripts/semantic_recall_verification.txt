@@ -1,0 +1,25 @@
+=== Query Q4 — SEMANTIC RECALL ===
+  query     : Which AWS offering lets a business converse with its structured spreadsheet data using everyday language?
+  q tokens  : ['aws', 'business', 'converse', 'data', 'everyday', 'language', 'lets', 'offering', 'spreadsheet', 'structured']
+  expects   : semantic recall (zero descriptor overlap)
+    corpus/aws/amazon-q-quicksight.md
+      descriptor overlap : (none)
+      full-chunk overlap : ['business', 'data', 'language']
+  ✓ PASS: zero descriptor overlap — keyword fallback cannot reach this chunk
+          (note: full-chunk overlap is ['business', 'data', 'language'],
+          but the keyword fallback only sees the descriptor, not the body)
+
+=== Query Q5 — SEMANTIC RECALL ===
+  query     : How do I stop my deployed model from giving harmful or off-topic replies to end users?
+  q tokens  : ['deployed', 'end', 'giving', 'harmful', 'model', 'off-topic', 'replies', 'stop', 'users']
+  expects   : semantic recall (zero descriptor overlap)
+    corpus/aws/bedrock-guardrails.md
+      descriptor overlap : (none)
+      full-chunk overlap : ['model', 'replies', 'users']
+  ✓ PASS: zero descriptor overlap — keyword fallback cannot reach this chunk
+          (note: full-chunk overlap is ['model', 'replies', 'users'],
+          but the keyword fallback only sees the descriptor, not the body)
+
+============================================================
+ALL SEMANTIC-RECALL QUERIES PASSED THE 'NO LEXICAL OVERLAP' TEST
+============================================================

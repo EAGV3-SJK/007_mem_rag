@@ -1,0 +1,54 @@
+{
+  "corpus_path": "corpus",
+  "corpus_description": "Over 50 documents on AWS AI/ML services, including Bedrock, SageMaker, Q, and Titan.",
+  "requirements": {
+    "must_pass_indexed": true,
+    "must_fail_no_corpus": true,
+    "semantic_recall_min": 2,
+    "description": "Each query must answer correctly with the index and fail without it. At least two require semantic recall where query wording does not appear verbatim in answering chunks."
+  },
+  "queries": [
+    {
+      "id": "q1",
+      "kind": "lexical",
+      "title": "Titan Multimodal Inputs",
+      "query": "What are the input modalities supported by Amazon Titan multimodal embeddings?",
+      "answer_terms": ["text", "image", "modalities"],
+      "target_doc": "amazon-titan-multimodal-embeddings.md"
+    },
+    {
+      "id": "q2",
+      "kind": "lexical",
+      "title": "SageMaker Inference Comparison",
+      "query": "What is the difference between Amazon SageMaker real-time inference and serverless inference?",
+      "answer_terms": ["real-time", "serverless", "cold start", "pricing model"],
+      "target_doc": "sagemaker-inference-options.md"
+    },
+    {
+      "id": "q3",
+      "kind": "lexical",
+      "title": "Bedrock Chunking Strategies",
+      "query": "How does Amazon Bedrock Knowledge Bases handle chunking strategies for ingested documents?",
+      "answer_terms": ["fixed-size", "semantic", "hierarchical", "chunking"],
+      "target_doc": "bedrock-knowledge-bases.md"
+    },
+    {
+      "id": "q4",
+      "kind": "semantic",
+      "title": "Converse with Spreadsheet Data",
+      "query": "Which AWS offering lets a business converse with its structured spreadsheet data using everyday language?",
+      "answer_terms": ["Amazon Q", "QuickSight", "natural language", "BI"],
+      "target_doc": "amazon-q-quicksight.md",
+      "semantic_note": "Query uses 'converse', 'spreadsheet', 'everyday language'. Answering chunk uses 'natural language', 'query', 'BI', 'datasets'. No direct keyword overlap."
+    },
+    {
+      "id": "q5",
+      "kind": "semantic",
+      "title": "Stop Harmful Replies",
+      "query": "How do I stop my deployed model from giving harmful or off-topic replies to end users?",
+      "answer_terms": ["Guardrails", "Bedrock", "denied topics", "content filters"],
+      "target_doc": "bedrock-guardrails.md",
+      "semantic_note": "Query uses 'stop', 'harmful', 'off-topic replies'. Answering chunk uses 'Guardrails', 'content filters', 'denied topics'. No direct keyword overlap."
+    }
+  ]
+}

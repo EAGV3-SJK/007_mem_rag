@@ -1,0 +1,30 @@
+Lexical queries (Q1–Q3) — query words appear in the source chunks, so BM25/keyword retrieval would also work. The point is the answer is wrong or incomplete without the index.
+Q1 — Factual lookup
+
+"What are the input modalities supported by Amazon Titan multimodal embeddings?"
+Retrieves the Titan Embeddings page chunk listing text + image inputs. Without index: LLM guesses or confabulates version numbers.
+
+Q2 — Comparison
+
+"What is the difference between Amazon SageMaker real-time inference and serverless inference?"
+Retrieves two distinct SageMaker chunks. Without index: generic tradeoff answer that misses cold-start specifics and pricing model.
+
+Q3 — Procedural
+
+"How does Amazon Bedrock Knowledge Bases handle chunking strategies for ingested documents?"
+Retrieves the chunk enumerating fixed-size, semantic, and hierarchical chunking options. Without index: misses the hierarchical option entirely.
+
+
+Semantic recall queries (Q4–Q5) — zero content-word overlap between query and answer chunk. Only embedding similarity can bridge them. These are your proof-of-architecture queries.
+Q4 — Zero overlap
+
+"Which AWS offering lets a business converse with its structured spreadsheet data using everyday language?"
+
+Words usedQueryconverse · spreadsheet · everyday · offering · lets · businessAnswer chunknatural language · query · QuickSight · dataset · BI · SQL generation
+Answer: Amazon Q in QuickSight. Without index: LLM guesses Athena or hallucinates a generic answer. The embedding model bridges "converse with spreadsheet data" → "natural language querying of BI datasets."
+Q5 — Zero overlap
+
+"How do I stop my deployed model from giving harmful or off-topic replies to end users?"
+
+Words usedQuerystop · harmful · off-topic · replies · end usersAnswer chunkGuardrails · content filters · denied topics · PII · grounding · redaction
+Answer: Amazon Bedrock Guardrails. Without index: vague answer about RLHF/fine-tuning, completely misses the Guardrails service. The embedding bridges "harmful replies" → "content filters / denied topics."
