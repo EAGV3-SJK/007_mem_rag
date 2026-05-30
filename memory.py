@@ -28,7 +28,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from gateway import LLM, embed as _gateway_embed, ensure_gateway
+from gateway import LLM, PROVIDER, embed as _gateway_embed, ensure_gateway
 from schemas import MemoryItem, ToolCall, new_id
 from vector_index import VectorIndex
 
@@ -339,6 +339,7 @@ _CLASSIFIER_PROMPT_TEMPLATE = _CLASSIFIER_PROMPT_FILE.read_text(encoding="utf-8"
 def _llm_classify(raw_text: str, schema: dict) -> dict:
     return LLM().chat(
         prompt=_CLASSIFIER_PROMPT_TEMPLATE.format(content=repr(raw_text)),
+        provider=PROVIDER,
         auto_route="memory",
         response_format={
             "type": "json_schema",

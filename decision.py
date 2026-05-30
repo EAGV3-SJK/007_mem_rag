@@ -18,7 +18,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from gateway import LLM, ensure_gateway
+from gateway import LLM, PROVIDER, ensure_gateway
 from memory import _format_hits
 from schemas import DecisionLLMFlat, DecisionOutput, Goal, MemoryItem, ToolCall
 
@@ -118,6 +118,7 @@ Do not repeat tool calls that history already shows succeeded with identical arg
         reply = LLM().chat(
             prompt=prompt,
             system=SYSTEM,
+            provider=PROVIDER,
             auto_route="decision",
             response_format={
                 "type": "json_schema",

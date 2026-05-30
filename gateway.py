@@ -11,6 +11,7 @@ layer in this agent imports from here so the boot logic lives in one place.
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 import time
@@ -20,6 +21,10 @@ import httpx
 
 GATEWAY_V7_DIR = Path(__file__).resolve().parents[0] / "llm_gatewayV7"
 GATEWAY_URL = "http://localhost:8107"
+
+# Optional provider pin. Set LLM_PROVIDER=g in .env to force Gemini on every
+# call, bypassing the auto-router. Leave unset to use auto-routing as normal.
+PROVIDER: str | None = os.getenv("LLM_PROVIDER") or None
 
 
 def _is_up() -> bool:
