@@ -1,6 +1,6 @@
 [INTRO]
 This demo walks through all eight benchmark queries
-for the Session 7 agent — an AI with persistent FAISS vector memory.
+for a cognitive AI agent with persistent FAISS vector memory.
 
 [SETUP]
 Before we start, dependencies are synced with uv,
