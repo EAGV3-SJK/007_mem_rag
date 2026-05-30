@@ -26,6 +26,14 @@ GATEWAY_URL = "http://localhost:8107"
 # call, bypassing the auto-router. Leave unset to use auto-routing as normal.
 PROVIDER: str | None = os.getenv("LLM_PROVIDER") or None
 
+# Fallback chain tried in order when the pinned provider returns 503.
+# Only active when PROVIDER is set. Defaults to g → gr → c → n.
+_FALLBACK_CHAIN: list[str] = [
+    p.strip()
+    for p in os.getenv("LLM_PROVIDER_FALLBACK", "g,gr,c,n").split(",")
+    if p.strip()
+]
+
 
 def _is_up() -> bool:
     try:
@@ -89,4 +97,30 @@ def embed(text: str, task_type: str = "retrieval_document") -> dict:
     return LLM().embed(text, task_type=task_type)
 
 
-__all__ = ["ensure_gateway", "LLM", "GATEWAY_URL", "GATEWAY_V7_DIR", "embed"]
+def chat_with_fallback(**kwargs) -> dict:
+    """LLM().chat() with automatic provider fallback on 503.
+
+    When PROVIDER is set, tries it first, then walks _FALLBACK_CHAIN on 503.
+    When PROVIDER is None, delegates entirely to the gateway's auto-router
+    (which already does internal failover) with a single call.
+    """
+    import httpx
+
+    if PROVIDER is None:
+        return LLM().chat(**kwargs)
+
+    chain = [PROVIDER] + [p for p in _FALLBACK_CHAIN if p != PROVIDER]
+    last_err: Exception = RuntimeError("no providers in fallback chain")
+    for provider in chain:
+        try:
+            return LLM().chat(provider=provider, **kwargs)
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 503:
+                print(f"[gateway] {provider} → 503, trying next in chain")
+                last_err = e
+                continue
+            raise
+    raise last_err
+
+
+__all__ = ["ensure_gateway", "LLM", "PROVIDER", "chat_with_fallback", "GATEWAY_URL", "GATEWAY_V7_DIR", "embed"]

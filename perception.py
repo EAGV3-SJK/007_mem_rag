@@ -18,7 +18,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from gateway import LLM, PROVIDER, ensure_gateway
+from gateway import LLM, chat_with_fallback, ensure_gateway
 from schemas import Goal, MemoryItem, Observation, new_id
 
 
@@ -98,10 +98,9 @@ def observe(
     )
 
     schema = _PerceptionOutput.model_json_schema()
-    reply = LLM().chat(
+    reply = chat_with_fallback(
         prompt=prompt,
         system=SYSTEM,
-        provider=PROVIDER,
         auto_route="perception",
         response_format={
             "type": "json_schema",
