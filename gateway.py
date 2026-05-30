@@ -26,13 +26,37 @@ GATEWAY_URL = "http://localhost:8107"
 # call, bypassing the auto-router. Leave unset to use auto-routing as normal.
 PROVIDER: str | None = os.getenv("LLM_PROVIDER") or None
 
-# Fallback chain tried in order when the pinned provider returns 503.
-# Only active when PROVIDER is set. Defaults to g → gr → c → n.
+# Hardcoded fallback chain used when the gateway's /v1/routers is unreachable.
+# Overridable via LLM_PROVIDER_FALLBACK env var.
 _FALLBACK_CHAIN: list[str] = [
     p.strip()
     for p in os.getenv("LLM_PROVIDER_FALLBACK", "g,gr,c,n").split(",")
     if p.strip()
 ]
+
+# HTTP status codes that mean "this provider failed, try the next one".
+_RETRYABLE_CODES = {404, 502, 503}
+
+# Cache for the gateway's TIER_TO_ORDER so we only fetch it once per process.
+_tier_order_cache: list[str] | None = None
+
+
+def _tier_provider_order(tier: str = "LARGE") -> list[str]:
+    """Return the provider order for *tier* from the gateway's /v1/routers.
+
+    Fetched once per process and cached. Falls back to _FALLBACK_CHAIN if the
+    gateway is unreachable or the tier key is missing.
+    """
+    global _tier_order_cache
+    if _tier_order_cache is None:
+        try:
+            resp = httpx.get(f"{GATEWAY_URL}/v1/routers", timeout=3.0)
+            order = resp.json().get("tier_to_order", {}).get(tier, [])
+            if order:
+                _tier_order_cache = order
+        except Exception:
+            pass
+    return _tier_order_cache or _FALLBACK_CHAIN
 
 
 def _is_up() -> bool:
@@ -98,26 +122,27 @@ def embed(text: str, task_type: str = "retrieval_document") -> dict:
 
 
 def chat_with_fallback(**kwargs) -> dict:
-    """LLM().chat() with automatic provider fallback on 503.
+    """LLM().chat() with tier-aware provider fallback.
 
-    Always walks the provider chain explicitly so the gateway's HUGE-token
-    classifier is bypassed (it only runs when no provider is pinned). When
-    PROVIDER is set it leads the chain; otherwise the chain starts from
-    _FALLBACK_CHAIN directly. Raises the last error if all providers fail.
+    Builds the fallback chain from the gateway's TIER_TO_ORDER (LARGE tier,
+    since all agent calls use structured output). PROVIDER env var leads the
+    chain when set. Falls back to _FALLBACK_CHAIN if the gateway is unreachable.
+    Always pins a provider explicitly so the HUGE-token classifier is bypassed.
+    Retries on 404 (model unavailable), 502 (upstream error), 503 (overloaded).
     """
-    import httpx
+    tier_order = _tier_provider_order("LARGE")
 
     if PROVIDER:
-        chain = [PROVIDER] + [p for p in _FALLBACK_CHAIN if p != PROVIDER]
+        chain = [PROVIDER] + [p for p in tier_order if p != PROVIDER]
     else:
-        chain = list(_FALLBACK_CHAIN)
+        chain = list(tier_order)
 
     last_err: Exception = RuntimeError("no providers in fallback chain")
     for provider in chain:
         try:
             return LLM().chat(provider=provider, **kwargs)
         except httpx.HTTPStatusError as e:
-            if e.response.status_code in (502, 503):
+            if e.response.status_code in _RETRYABLE_CODES:
                 print(f"[gateway] {provider} → {e.response.status_code}, trying next in chain")
                 last_err = e
                 continue
