@@ -361,3 +361,41 @@ uv run agent7.py "Compare how the ReAct paper and the Chain-of-Thought paper dif
 | `dpo.md` | Direct Preference Optimisation — reward shaping without a separate reward model |
 | `lora.md` | LoRA — parameter-efficient fine-tuning |
 | `react.md` | ReAct — interleaving reasoning traces and tool actions |
+
+---
+
+## Corpus (`corpus/`)
+
+The RAG test corpus lives under `corpus/` and is split into two sub-collections.
+
+### `corpus/aws/` — 55 documents
+
+Covers the AWS AI/ML and cloud services landscape. Used by the five queries in `aws_queries.json` to validate lexical and semantic retrieval.
+
+| Category | Documents |
+|----------|-----------|
+| **Amazon Bedrock** | `bedrock-agents.md`, `bedrock-guardrails.md`, `bedrock-knowledge-bases.md`, `bedrock-models.md` |
+| **Amazon Titan** | `amazon-titan-multimodal-embeddings.md`, `titan-image-generator.md`, `titan-text.md` |
+| **Amazon SageMaker** | `sagemaker-autopilot.md`, `sagemaker-data-wrangler.md`, `sagemaker-feature-store.md`, `sagemaker-inference-options.md`, `sagemaker-jumpstart.md`, `sagemaker-pipelines.md`, `sagemaker-studio.md` |
+| **Amazon Q / BI** | `amazon-q-quicksight.md` |
+| **AI / ML Services** | `aws-comprehend.md`, `aws-forecast.md`, `aws-lex.md`, `aws-personalize.md`, `aws-polly.md`, `aws-rekognition.md`, `aws-textract.md`, `aws-translate.md` |
+| **Data & Analytics** | `amazon-athena.md`, `amazon-dynamodb.md`, `amazon-kinesis.md`, `amazon-rds.md`, `amazon-redshift.md`, `aws-glue.md` |
+| **Compute & Networking** | `amazon-ec2.md`, `amazon-vpc.md`, `amazon-api-gateway.md`, `aws-lambda.md` |
+| **Storage** | `amazon-s3.md`, `amazon-efs.md`, `amazon-fsx.md` |
+| **Messaging** | `amazon-sns.md`, `amazon-sqs.md`, `aws-eventbridge.md` |
+| **DevOps & IaC** | `aws-cloudformation.md`, `aws-codebuild.md`, `aws-codecommit.md`, `aws-codedeploy.md`, `aws-codepipeline.md`, `aws-step-functions.md` |
+| **Security** | `aws-iam.md`, `aws-kms.md`, `aws-secrets-manager.md` |
+| **Observability** | `amazon-cloudwatch.md`, `aws-xray.md` |
+| **Other** | `amazon-route53.md`, `aws-backup.md`, `aws-cli.md`, `aws-dms.md`, `aws-sdk.md` |
+
+### `corpus/constraint-programming/` — 5 documents
+
+A focused sub-collection on constraint programming, included to demonstrate cross-domain retrieval.
+
+| File | Topic |
+|------|-------|
+| `cp-overview.md` | Constraint programming fundamentals |
+| `cp-use-cases.md` | Real-world applications of constraint programming |
+| `cp-vs-optimization.md` | CP compared to mathematical optimisation |
+| `or-tools.md` | Google OR-Tools solver |
+| `aws-for-cp.md` | Running constraint solvers on AWS infrastructure |
