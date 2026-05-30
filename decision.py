@@ -22,9 +22,9 @@ from gateway import LLM, chat_with_fallback, ensure_gateway
 from memory import _format_hits
 from schemas import DecisionLLMFlat, DecisionOutput, Goal, MemoryItem, ToolCall
 
-_MAX_ATTACHED_BYTES = 12_000
-_MAX_HIST_CHARS = 12_000
-_MAX_HITS_CHARS = 16_000
+_MAX_ATTACHED_BYTES = 4_000
+_MAX_HIST_CHARS = 6_000
+_MAX_HITS_CHARS = 8_000
 
 _RULES_FILE = Path(__file__).parent / "decision_system_prompt.md"
 SYSTEM = _RULES_FILE.read_text(encoding="utf-8").strip()

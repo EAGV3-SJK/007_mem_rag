@@ -100,16 +100,18 @@ def embed(text: str, task_type: str = "retrieval_document") -> dict:
 def chat_with_fallback(**kwargs) -> dict:
     """LLM().chat() with automatic provider fallback on 503.
 
-    When PROVIDER is set, tries it first, then walks _FALLBACK_CHAIN on 503.
-    When PROVIDER is None, delegates entirely to the gateway's auto-router
-    (which already does internal failover) with a single call.
+    Always walks the provider chain explicitly so the gateway's HUGE-token
+    classifier is bypassed (it only runs when no provider is pinned). When
+    PROVIDER is set it leads the chain; otherwise the chain starts from
+    _FALLBACK_CHAIN directly. Raises the last error if all providers fail.
     """
     import httpx
 
-    if PROVIDER is None:
-        return LLM().chat(**kwargs)
+    if PROVIDER:
+        chain = [PROVIDER] + [p for p in _FALLBACK_CHAIN if p != PROVIDER]
+    else:
+        chain = list(_FALLBACK_CHAIN)
 
-    chain = [PROVIDER] + [p for p in _FALLBACK_CHAIN if p != PROVIDER]
     last_err: Exception = RuntimeError("no providers in fallback chain")
     for provider in chain:
         try:
