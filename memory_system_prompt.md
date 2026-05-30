@@ -3,7 +3,7 @@ Classify the following content into a JSON memory record.
 CONTENT: {content}
 
 Return a JSON object with these fields:
-- kind ∈ {fact, preference, tool_outcome, scratchpad}.
+- kind ∈ {{fact, preference, tool_outcome, scratchpad}}.
 - descriptor: one short human-readable line. MUST include any
   specific dates (e.g. '15 May 2026'), numbers, names, places,
   or other concrete entities present in the content — these are

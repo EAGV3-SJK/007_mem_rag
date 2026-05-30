@@ -143,6 +143,9 @@ async def run(query: str) -> str:
 
                 # 4. ACTION
                 tc = out.tool_call
+                if tc is None:
+                    print("[decision]      no tool call and no answer — LLM call failed, skipping iteration")
+                    continue
                 print(f"[decision]      TOOL_CALL: {tc.name}({json.dumps(tc.arguments)[:120]})")
                 result_text, art_id = await action.execute(session, tc)
                 preview = result_text[:200].replace("\n", " ")
