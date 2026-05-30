@@ -1,0 +1,80 @@
+[INTRO]
+This demo walks through all eight benchmark queries
+for the Session 7 agent — an AI with persistent FAISS vector memory.
+
+[SETUP]
+Before we start, dependencies are synced with uv,
+and the LLM gateway is running on port 8107 in a separate terminal.
+We also clear out any leftover sandbox files from previous runs.
+
+[QUERY A — Claude Shannon]
+Query A. We ask the agent to fetch Claude Shannon's Wikipedia page
+and extract his birth date, death date, and three key contributions.
+The agent fetches the page, stores it as an artifact,
+and answers in three iterations — no vector search needed.
+
+[QUERY B — Tokyo Weekend]
+Query B. A multi-goal query: find family-friendly activities in Tokyo,
+check Saturday's weather, then pick the best match.
+The agent decomposes this into three goals and carries the weather result
+through memory into its final decision. Eight iterations total.
+
+[QUERY C — Mom's Birthday]
+Query C, Run 1. We tell the agent mom's birthday is 15 May 2026
+and ask it to create reminders. It writes a fact item to FAISS
+and creates the reminder files in the sandbox. Four iterations.
+
+Query C, Run 2. Fresh process — zero tool calls.
+The agent embeds the query, FAISS returns the birthday fact from Run 1,
+and it answers directly from memory. Three iterations, no tools.
+
+[QUERY D — Asyncio Research]
+Query D. We ask for Python asyncio best practices from the top three web results.
+The agent searches, fetches three pages as artifacts,
+and synthesises the common advice. Six iterations.
+
+[STATE CLEAR]
+Before Query E, we wipe the FAISS index.
+E needs a clean slate to produce the expected chunk counts.
+
+[QUERY E — Attention Paper]
+Query E. We index the Attention paper and ask for its three key contributions.
+The agent chunks the file into eleven 400-word windows,
+embeds each chunk, and retrieves the answer via vector search. Five iterations.
+
+[STATE CLEAR]
+Clearing state again before Query F Run 1
+so the corpus produces exactly fifteen chunks across five papers.
+
+[QUERY F — Cross-run Recall]
+Query F, Run 1. Index every paper under the papers folder.
+The agent discovers five files, indexes them all, and reports fifteen total chunks.
+Eleven iterations.
+
+Query F, Run 2. Fresh process — same disk state.
+The agent reads the persisted FAISS index cold and answers
+about chain-of-thought reasoning in three iterations, with no re-fetching.
+This is the key architectural point: memory survives across processes.
+
+[QUERY G — Synonym Recall]
+Query G. We ask about the "credit assignment problem" —
+a phrase that appears nowhere in the indexed papers.
+Keyword search returns nothing. Vector search surfaces four relevant chunks
+by embedding similarity alone. This is where vector beats keyword.
+
+[QUERY H — Cross-document Synthesis]
+Query H. Compare how the ReAct and Chain-of-Thought papers
+treat intermediate reasoning. The agent pulls chunks from both papers
+and produces a sourced comparison in three iterations.
+
+[AWS RAG QUERIES]
+Finally, five RAG queries against the AWS corpus.
+Three lexical queries on Titan, SageMaker, and Bedrock —
+where query words appear directly in the source chunks.
+And two semantic queries — spreadsheet data and harmful replies —
+where no query word overlaps with the answer chunk.
+Only embedding similarity bridges the gap.
+
+[OUTRO]
+That's all eight query groups.
+The full source is linked below.
