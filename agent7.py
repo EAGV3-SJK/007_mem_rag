@@ -136,6 +136,9 @@ async def run(query: str) -> str:
                         "text": out.answer,
                     })
                     final_answer = out.answer
+                    goal.done = True
+                    if all(g.done for g in prior_goals):
+                        break
                     continue
 
                 # 4. ACTION
