@@ -15,6 +15,7 @@ fetch_urls for batched web fetches.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Any
 
 from gateway import LLM, ensure_gateway
@@ -25,24 +26,8 @@ _MAX_ATTACHED_BYTES = 12_000
 _MAX_HIST_CHARS = 12_000
 _MAX_HITS_CHARS = 16_000
 
-SYSTEM = (
-    "You are the Decision module of a cognitive agent.\n"
-    "Given the current goal, memory hits, run history, and optionally attached "
-    "artifact bytes, decide on ONE action: call a tool or emit a final answer.\n\n"
-    "Return JSON matching the schema with fields: reasoning, branch, tool_name, "
-    "tool_arguments_json, answer_text.\n\n"
-    "CORE RULES:\n"
-    "1. Memory-first: if memory hits or attached bytes already answer the goal, "
-    "return branch='answer' immediately.\n"
-    "2. Indexed corpus: when memory descriptors start with [sandbox:corpus/...], "
-    "call search_knowledge — do NOT re-index or re-fetch.\n"
-    "3. Corpus not indexed: call index_directory('corpus/aws') first, then search_knowledge.\n"
-    "4. After search_knowledge returns chunks, synthesize an answer — do not search again.\n"
-    "5. Web research: web_search → fetch_urls (batch ≤3 URLs) → answer.\n"
-    "6. Never pass artifact handles (starting 'art:') as url/path arguments.\n"
-    "7. tool_arguments_json must be valid JSON. web_search requires non-empty 'query'.\n"
-    "8. Reasoning prefix: [TOOL_SELECTION], [FINAL_ANSWER_SYNTHESIS], or [INVESTIGATIVE_SEARCH]."
-)
+_RULES_FILE = Path(__file__).parent / "decision_rules.txt"
+SYSTEM = _RULES_FILE.read_text(encoding="utf-8").strip()
 
 
 def _build_tool_catalog(tools: list[dict]) -> str:
