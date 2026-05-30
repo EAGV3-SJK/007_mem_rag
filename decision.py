@@ -26,7 +26,7 @@ _MAX_ATTACHED_BYTES = 12_000
 _MAX_HIST_CHARS = 12_000
 _MAX_HITS_CHARS = 16_000
 
-_RULES_FILE = Path(__file__).parent / "decision_rules.txt"
+_RULES_FILE = Path(__file__).parent / "decision_system_prompt.md"
 SYSTEM = _RULES_FILE.read_text(encoding="utf-8").strip()
 
 
