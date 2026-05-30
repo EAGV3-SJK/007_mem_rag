@@ -117,8 +117,8 @@ def chat_with_fallback(**kwargs) -> dict:
         try:
             return LLM().chat(provider=provider, **kwargs)
         except httpx.HTTPStatusError as e:
-            if e.response.status_code == 503:
-                print(f"[gateway] {provider} → 503, trying next in chain")
+            if e.response.status_code in (502, 503):
+                print(f"[gateway] {provider} → {e.response.status_code}, trying next in chain")
                 last_err = e
                 continue
             raise

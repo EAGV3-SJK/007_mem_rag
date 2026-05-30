@@ -14,4 +14,4 @@ Return a JSON object with these fields:
 - value: a dict with structured fields (entities, dates,
   attributes). MUST NOT be empty when the content has any
   identifiable entity — if you cannot classify a specific
-  attribute, include {"raw": <the original content>}.
+  attribute, include {{"raw": <the original content>}}.
