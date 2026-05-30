@@ -16,3 +16,6 @@ __pycache__/
 
 # os
 .DS_Store
+
+#PDF files
+*.pdf
